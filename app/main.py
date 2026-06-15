@@ -60,3 +60,16 @@ def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)
     db.refresh(db_project)
 
     return db_project
+
+@app.delete("/projects/{project_id}")
+def delete_project(project_id: int, db: Session = Depends(get_db)):
+
+    project = db.query(Project).filter(Project.id == project_id).first()
+
+    if not project:
+        return {"error": "Project not found"}
+
+    db.delete(project)
+    db.commit()
+
+    return {"message": "Project deleted"}
