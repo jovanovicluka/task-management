@@ -27,3 +27,19 @@ class Project(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="projects")
+    tasks = relationship("Task", back_populates="project")
+
+class Task(Base):
+    __tablename__ = "tasks"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    title = Column(String(255), nullable=False)
+    description = Column(String(500))
+
+    status = Column(String(50), nullable=False, default="TODO")
+    priority = Column(String(50), nullable=False, default="MEDIUM")
+
+    project_id = Column(Integer, ForeignKey("projects.id"))
+
+    project = relationship("Project", back_populates="tasks")
