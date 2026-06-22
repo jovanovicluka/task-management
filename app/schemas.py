@@ -13,6 +13,16 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class UserRegister(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str
+
 class ProjectCreate(BaseModel):
     name: str
     description: str | None = None
