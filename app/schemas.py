@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from enums import TaskStatus, TaskPriority
+from app.enums import TaskStatus, TaskPriority
 
 class UserCreate(BaseModel):
     username: str

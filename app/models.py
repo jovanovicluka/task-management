@@ -13,7 +13,6 @@ class User(Base):
     username = Column(String(100), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
 
-    # RELACIJA
     projects = relationship("Project", back_populates="owner")
 
 
