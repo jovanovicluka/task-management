@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from enums import TaskStatus, TaskPriority
 
 class UserCreate(BaseModel):
     username: str
@@ -29,16 +30,16 @@ class ProjectResponse(BaseModel):
 class TaskCreate(BaseModel):
     title: str
     description: str | None = None
-    status: str = "TODO"
-    priority: str = "MEDIUM"
+    status: str = TaskStatus.TODO
+    priority: str = TaskPriority.MEDIUM
     project_id: int
 
 class TaskResponse(BaseModel):
     id: int
     title: str
     description: str | None
-    status: str
-    priority: str
+    status: TaskStatus
+    priority: TaskPriority
     project_id: int
 
     class Config:
