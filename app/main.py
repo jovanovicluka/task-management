@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 from app.database import engine
 from app.models import Base
-from app.routers import users, tasks, projects;
+from app.routers import users, tasks, projects, auth;
 
 app = FastAPI()
 app.include_router(users.router)
 app.include_router(projects.router)
 app.include_router(tasks.router)
+app.include_router(auth.router)
 
 
 Base.metadata.create_all(bind=engine)
