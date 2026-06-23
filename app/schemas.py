@@ -13,6 +13,14 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class CurrentUserResponse(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+
+    class Config:
+        from_attributes = True
+
 class UserRegister(BaseModel):
     username: str
     email: EmailStr
