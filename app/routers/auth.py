@@ -6,6 +6,7 @@ from app.models import User
 from app import schemas
 from app.security import hash_password, verify_password
 from app.jwt import create_access_token, create_refresh_token
+from app.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/auth",
@@ -71,3 +72,12 @@ def login(
         "refresh_token": refresh_token,
         "token_type": "bearer"
     }
+
+@router.get(
+"/me",
+response_model=schemas.CurrentUserResponse
+)
+def get_me(
+    current_user: User = Depends(get_current_user)
+):
+    return current_user
