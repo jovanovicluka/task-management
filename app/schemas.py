@@ -35,6 +35,9 @@ class Token(BaseModel):
     refresh_token: str
     token_type: str
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
 class ProjectCreate(BaseModel):
     name: str
     description: str | None = None

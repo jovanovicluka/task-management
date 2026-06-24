@@ -5,7 +5,7 @@ from app.database import get_db
 from app.models import User
 from app import schemas
 from app.security import hash_password, verify_password
-from app.jwt import create_access_token, create_refresh_token
+from app.jwt import create_access_token, create_refresh_token, decode_token
 from app.dependencies import get_current_user
 
 router = APIRouter(
@@ -81,3 +81,34 @@ def get_me(
     current_user: User = Depends(get_current_user)
 ):
     return current_user
+
+@router.post("/refresh")
+def refresh_access_token(
+    data: schemas.RefreshTokenRequest
+):
+    payload = decode_token(
+        data.refresh_token
+    )
+
+    if not payload:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid refresh token"
+        )
+
+    if payload.get("type") != "refresh":
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token type"
+        )
+
+    user_id = payload.get("sub")
+
+    new_access_token = create_access_token(
+        {"sub": user_id}
+    )
+
+    return {
+        "access_token": new_access_token,
+        "token_type": "bearer"
+    }
