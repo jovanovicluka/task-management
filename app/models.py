@@ -14,7 +14,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
 
-    projects = relationship("Project", back_populates="owner")
+    projects = relationship("Project", back_populates="owner", cascade="all, delete")
 
 
 class Project(Base):
@@ -27,7 +27,7 @@ class Project(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="projects")
-    tasks = relationship("Task", back_populates="project")
+    tasks = relationship("Task", back_populates="project", cascade="all, delete")
 
 class Task(Base):
     __tablename__ = "tasks"
