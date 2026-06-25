@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Project, User
 from app import schemas
+from app.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/projects",
@@ -31,20 +32,16 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=schemas.ProjectResponse)
-def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)):
-
-    user = db.query(User).filter(User.id == project.owner_id).first()
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="User (owner) not found"
-        )
+def create_project(
+    project: schemas.ProjectCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
 
     db_project = Project(
         name=project.name,
         description=project.description,
-        owner_id=project.owner_id
+        owner_id=current_user.id
     )
 
     db.add(db_project)
