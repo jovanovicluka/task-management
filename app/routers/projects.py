@@ -18,14 +18,26 @@ def get_projects(db: Session = Depends(get_db)):
 
 
 @router.get("/{project_id}", response_model=schemas.ProjectResponse)
-def get_project(project_id: int, db: Session = Depends(get_db)):
+def get_project(
+    project_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
 
-    project = db.query(Project).filter(Project.id == project_id).first()
+    project = db.query(Project).filter(
+        Project.id == project_id
+    ).first()
 
     if not project:
         raise HTTPException(
             status_code=404,
             detail="Project not found"
+        )
+
+    if project.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized"
         )
 
     return project
@@ -52,9 +64,15 @@ def create_project(
 
 
 @router.delete("/{project_id}")
-def delete_project(project_id: int, db: Session = Depends(get_db)):
+def delete_project(
+    project_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
 
-    project = db.query(Project).filter(Project.id == project_id).first()
+    project = db.query(Project).filter(
+        Project.id == project_id
+    ).first()
 
     if not project:
         raise HTTPException(
@@ -62,7 +80,15 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
             detail="Project not found"
         )
 
+    if project.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized"
+        )
+
     db.delete(project)
     db.commit()
 
-    return {"message": "Project deleted"}
+    return {
+        "message": f"Project {project_id} deleted successfully"
+    }
