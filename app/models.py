@@ -1,5 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase, relationship
 from sqlalchemy import Column, Integer, String, ForeignKey
+from app.enums import TaskStatus, TaskPriority
 
 
 class Base(DeclarativeBase):
@@ -37,8 +38,8 @@ class Task(Base):
     title = Column(String(255), nullable=False)
     description = Column(String(500))
 
-    status = Column(String(50), nullable=False, default="TODO")
-    priority = Column(String(50), nullable=False, default="MEDIUM")
+    status = Column(String(50), nullable=False, default=TaskStatus.TODO)
+    priority = Column(String(50), nullable=False, default=TaskPriority.MEDIUM)
 
     project_id = Column(Integer, ForeignKey("projects.id"))
 
