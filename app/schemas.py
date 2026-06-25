@@ -68,3 +68,7 @@ class TaskResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UpdateProject(BaseModel):
+    name: str
+    description: str | None = None
