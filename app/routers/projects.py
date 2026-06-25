@@ -13,8 +13,15 @@ router = APIRouter(
 
 
 @router.get("/", response_model=list[schemas.ProjectResponse])
-def get_projects(db: Session = Depends(get_db)):
-    return db.query(Project).all()
+def get_projects(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return (
+        db.query(Project)
+        .filter(Project.owner_id == current_user.id)
+        .all()
+    )
 
 
 @router.get("/{project_id}", response_model=schemas.ProjectResponse)
