@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Task, Project
+from app.models import Task, Project, User
+from app.dependencies import get_current_user
 from app.enums import TaskStatus
 from app import schemas
 
@@ -13,15 +14,19 @@ router = APIRouter(
 
 
 @router.post("/", response_model=schemas.TaskResponse)
-def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
+def create_task(
+    task: schemas.TaskCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+    ):
 
     project = db.query(Project).filter(Project.id == task.project_id).first()
 
     if not project:
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found"
-        )
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if project.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
 
     db_task = Task(
         title=task.title,
@@ -39,8 +44,16 @@ def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[schemas.TaskResponse])
-def get_tasks(db: Session = Depends(get_db)):
-    return db.query(Task).all()
+def get_tasks(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return (
+        db.query(Task)
+        .join(Project)
+        .filter(Project.owner_id == current_user.id)
+        .all()
+    )
 
 
 @router.get("/{task_id}", response_model=schemas.TaskResponse)
